@@ -1,0 +1,25 @@
+{
+  "name": "FollowingTriangle.Xr",
+  "rootNamespace": "FollowingTriangle.Xr",
+  "references": [
+    "FollowingTriangle.Core",
+    "Oculus.VR"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "META_XR_CORE_SDK"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.meta.xr.sdk.core",
+      "expression": "",
+      "define": "META_XR_CORE_SDK"
+    }
+  ],
+  "noEngineReferences": false
+}

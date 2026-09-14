@@ -1,0 +1,16 @@
+{
+  "name": "FollowingTriangle.Runtime",
+  "rootNamespace": "FollowingTriangle.Runtime",
+  "references": [
+    "FollowingTriangle.Core"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

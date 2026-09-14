@@ -1,0 +1,19 @@
+{
+  "name": "FollowingTriangle.Editor",
+  "rootNamespace": "FollowingTriangle.Editor",
+  "references": [
+    "FollowingTriangle.Core",
+    "FollowingTriangle.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -26,9 +26,20 @@ namespace FollowingTriangle.Editor
         [MenuItem("Following Triangle/Build Sandbox Scene")]
         public static void BuildAndSave()
         {
-            var settings = EnsureSettingsAsset();
+            EnsureSettingsAsset();
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            // 設定アセットはシーンを作り直した「後」に読み直す。
+            // NewScene をまたいで持ち越したインスタンスを使うと、参照が
+            // {fileID: 0} として保存されてしまう（batchmode で実際に発生した）。
+            var settings = AssetDatabase.LoadAssetAtPath<ExperimentSettings>(SettingsPath);
+            if (settings == null)
+            {
+                Debug.LogError($"[SandboxSceneBuilder] {SettingsPath} を読み込めませんでした。中止します。");
+                return;
+            }
+
             Populate(settings);
 
             Directory.CreateDirectory(SceneDirectory);
@@ -49,9 +60,10 @@ namespace FollowingTriangle.Editor
             var settings = ScriptableObject.CreateInstance<ExperimentSettings>();
             AssetDatabase.CreateAsset(settings, SettingsPath);
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
             Debug.Log($"[SandboxSceneBuilder] {SettingsPath} を既定値で作成しました。");
-            return settings;
+            return AssetDatabase.LoadAssetAtPath<ExperimentSettings>(SettingsPath);
         }
 
         private static void Populate(ExperimentSettings settings)
@@ -99,6 +111,9 @@ namespace FollowingTriangle.Editor
         /// <summary>
         /// private [SerializeField] をエディタから設定する。
         /// インスペクタで配線するのと完全に同じ結果になり、実行時 API を増やさずに済む。
+        ///
+        /// 代入したあと必ず読み戻して検証する。配線が黙って失われても、
+        /// シーンは正常に生成されたように見えてしまい、Play するまで気づけないため。
         /// </summary>
         private static void SetPrivateObjectField(Object target, string fieldName, Object value)
         {
@@ -113,6 +128,14 @@ namespace FollowingTriangle.Editor
 
             property.objectReferenceValue = value;
             serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            serialized.Update();
+            if (serialized.FindProperty(fieldName).objectReferenceValue != value)
+            {
+                Debug.LogError(
+                    $"[SandboxSceneBuilder] {target.GetType().Name}.{fieldName} への参照設定に失敗しました " +
+                    $"(設定しようとした値: {value})。生成されたシーンは不完全です。");
+            }
         }
     }
 }

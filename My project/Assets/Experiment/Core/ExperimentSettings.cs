@@ -116,6 +116,26 @@ namespace FollowingTriangle.Core
         private string recordingsDirectoryName = "recordings";
 
         // ------------------------------------------------------------------
+        // §5.2 / §5.3 / §7.3 再生・位置合わせ
+        // ------------------------------------------------------------------
+        [Header("再生と位置合わせ (仕様書 §5.2, §5.3, §7.3)")]
+        [SerializeField]
+        [Tooltip("Registration の推定法 (§5.3)。仕様書が解法を指定していないため選択式。" +
+                 "使用した手法は試行ログのヘッダに記録される。")]
+        private RegistrationMethod registrationMethod = RegistrationMethod.ThreeVertexLeastSquares;
+
+        [SerializeField]
+        [Tooltip("再生時に A の首頂点を head pose と現在の d から引き直す。" +
+                 "off なら録画時の V0 をそのまま使う。録画には両方の情報が入っている。")]
+        private bool recomputeNeckVertexOnPlayback = true;
+
+        [SerializeField]
+        [Tooltip("基準姿勢フェーズ中に相手三角形を表示する。" +
+                 "既定は off。表示すると B が A に寄せに行き、基準姿勢が自然な姿勢でなくなって " +
+                 "Registration 自体が汚染される。")]
+        private bool showOtherTriangleDuringBaseline = false;
+
+        // ------------------------------------------------------------------
         // §0.3 スコープ外
         // ------------------------------------------------------------------
         [Header("実験2の要因 (仕様書 §0.3：本実装では未実装のパラメータ枠)")]
@@ -139,6 +159,9 @@ namespace FollowingTriangle.Core
         public bool ShowPerformerTrackingWarning => showPerformerTrackingWarning;
         public bool PrettyPrintRecordingJson => prettyPrintRecordingJson;
         public string RecordingsDirectoryName => recordingsDirectoryName;
+        public RegistrationMethod RegistrationMethod => registrationMethod;
+        public bool RecomputeNeckVertexOnPlayback => recomputeNeckVertexOnPlayback;
+        public bool ShowOtherTriangleDuringBaseline => showOtherTriangleDuringBaseline;
         public Experiment2Parameters Experiment2 => experiment2;
 
         /// <summary>仕様書 §5.4 の 1 試行の総時間 [s]（教示フェーズは被験者ペースなので含まない）。</summary>

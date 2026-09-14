@@ -38,6 +38,9 @@
 # Unity3D generated crash report
 sysinfo.txt
 
+# Transient assembly Unity drops in the project root during some reload/IDE operations
+TempAssembly.dll
+
 # Builds
 *.apk
 *.aab

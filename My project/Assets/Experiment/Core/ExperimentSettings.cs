@@ -86,6 +86,36 @@ namespace FollowingTriangle.Core
         private int segmentCount = 4;
 
         // ------------------------------------------------------------------
+        // §3.1 / §5.1 / §5.4 記録モード
+        // ------------------------------------------------------------------
+        [Header("記録モード (仕様書 §3.1, §5.1, §5.4)")]
+        [SerializeField]
+        [Tooltip("キャリブレーションの基準姿勢保持時間 [s] (§5.1)。")]
+        private float calibrationHoldSeconds = 3f;
+
+        [SerializeField]
+        [Tooltip("区間マーカーの打ち方 (§5.4)。")]
+        private SegmentMarkerMode segmentMarkerMode = SegmentMarkerMode.TimeBased;
+
+        [SerializeField]
+        [Tooltip("記録中、演者 A に自分の三角形を表示する。実験モードの刺激提示とは別物。")]
+        private bool showPerformerTriangle = true;
+
+        [SerializeField]
+        [Tooltip("記録中、手のトラッキング信頼度が低下したら演者 A に警告する (§7.1)。" +
+                 "収録後に低信頼区間が判明するより、その場で撮り直せるほうが安全。")]
+        private bool showPerformerTrackingWarning = true;
+
+        [SerializeField]
+        [Tooltip("録画 JSON を整形して出力する (§3.1 可読性優先)。" +
+                 "93 s の録画で 10 MB 前後になる。off にすると 1/3 程度。")]
+        private bool prettyPrintRecordingJson = true;
+
+        [SerializeField]
+        [Tooltip("録画の保存先ディレクトリ名。Application.persistentDataPath 直下 (§3.1)。")]
+        private string recordingsDirectoryName = "recordings";
+
+        // ------------------------------------------------------------------
         // §0.3 スコープ外
         // ------------------------------------------------------------------
         [Header("実験2の要因 (仕様書 §0.3：本実装では未実装のパラメータ枠)")]
@@ -103,6 +133,12 @@ namespace FollowingTriangle.Core
         public float LeadInSeconds => leadInSeconds;
         public float SegmentSeconds => segmentSeconds;
         public int SegmentCount => segmentCount;
+        public float CalibrationHoldSeconds => calibrationHoldSeconds;
+        public SegmentMarkerMode SegmentMarkerMode => segmentMarkerMode;
+        public bool ShowPerformerTriangle => showPerformerTriangle;
+        public bool ShowPerformerTrackingWarning => showPerformerTrackingWarning;
+        public bool PrettyPrintRecordingJson => prettyPrintRecordingJson;
+        public string RecordingsDirectoryName => recordingsDirectoryName;
         public Experiment2Parameters Experiment2 => experiment2;
 
         /// <summary>仕様書 §5.4 の 1 試行の総時間 [s]（教示フェーズは被験者ペースなので含まない）。</summary>
@@ -119,6 +155,12 @@ namespace FollowingTriangle.Core
             leadInSeconds = Mathf.Max(0f, leadInSeconds);
             segmentSeconds = Mathf.Max(0f, segmentSeconds);
             segmentCount = Mathf.Max(0, segmentCount);
+            calibrationHoldSeconds = Mathf.Max(0.1f, calibrationHoldSeconds);
+
+            if (string.IsNullOrWhiteSpace(recordingsDirectoryName))
+            {
+                recordingsDirectoryName = "recordings";
+            }
 
             experiment2.WarnIfEnabled(name);
         }

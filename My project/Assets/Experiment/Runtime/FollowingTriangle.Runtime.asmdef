@@ -2,7 +2,9 @@
   "name": "FollowingTriangle.Runtime",
   "rootNamespace": "FollowingTriangle.Runtime",
   "references": [
-    "FollowingTriangle.Core"
+    "FollowingTriangle.Core",
+    "Unity.InputSystem",
+    "Unity.TextMeshPro"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

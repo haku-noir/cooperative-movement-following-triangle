@@ -18,7 +18,7 @@ namespace FollowingTriangle.Xr
     /// 現段階では保持と Console 出力までを行う。
     /// </summary>
     [DisallowMultipleComponent]
-    public class XrRuntimeConfig : MonoBehaviour
+    public class XrRuntimeConfig : MonoBehaviour, IXrRuntimeInfo, IRecenterMonitor
     {
         [SerializeField] private ExperimentSettings settings;
 
@@ -33,6 +33,9 @@ namespace FollowingTriangle.Xr
 
         /// <summary>トラッキング原点が Floor Level だったか（仕様書 §1）。</summary>
         public bool TrackingOriginIsFloorLevel { get; private set; }
+
+        /// <summary>実際に設定されていたトラッキング原点の種類。メタデータに残す。</summary>
+        public string TrackingOriginType { get; private set; } = "unknown";
 
         /// <summary>この試行中に再センタリングが発生した回数（仕様書 §1）。</summary>
         public int RecenterCount { get; private set; }
@@ -136,10 +139,12 @@ namespace FollowingTriangle.Xr
             if (manager == null)
             {
                 TrackingOriginIsFloorLevel = false;
+                TrackingOriginType = "unknown";
                 Debug.LogWarning($"[{nameof(XrRuntimeConfig)}] OVRManager が見つかりません。");
                 return;
             }
 
+            TrackingOriginType = manager.trackingOriginType.ToString();
             TrackingOriginIsFloorLevel =
                 manager.trackingOriginType == OVRManager.TrackingOrigin.FloorLevel;
 

@@ -50,6 +50,16 @@ namespace FollowingTriangle.Runtime
         public Transform LeftHandProxy => leftHandProxy;
         public Transform RightHandProxy => rightHandProxy;
 
+        /// <summary>
+        /// 自動運動の有効・無効。記録モードのエディタ検証では、
+        /// キャリブレーション中だけ静止させたいので実行時に切り替えられるようにしてある。
+        /// </summary>
+        public bool Animate
+        {
+            get => animate;
+            set => animate = value;
+        }
+
         public bool IsAvailable => settings != null && headProxy != null
                                    && leftHandProxy != null && rightHandProxy != null;
 

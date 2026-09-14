@@ -60,6 +60,15 @@ Unity Editor を開いたままだとプロジェクトがロックされ、batc
 `Assets/Experiment/Scenes/Sandbox.unity` と `Assets/Experiment/Settings/ExperimentSettings.asset`
 が生成され、シーンが開く。
 
+> **Play モードを停止してから実行すること。**
+> `EditorSceneManager.NewScene` は Play モード中に使えず、
+> `InvalidOperationException: This cannot be used during play mode` で失敗する。
+> Play 中に実行した場合はダイアログで停止を促して中止する（設定アセットだけ作られた
+> 中途半端な状態にはならない）。
+>
+> 生成は既存の `Sandbox.unity` を上書きする。シーンを手で編集した場合、その変更は失われる。
+> 検証シーンの構成は `Assets/Experiment/Editor/SandboxSceneBuilder.cs` 側で変更すること。
+
 シーンには以下だけが置かれる（装飾は無し）。
 
 - `Editor Preview Camera` … エディタで形を見るためのカメラ。実機の視点ではない

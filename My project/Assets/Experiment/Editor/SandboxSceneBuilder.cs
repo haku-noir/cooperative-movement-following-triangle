@@ -26,6 +26,34 @@ namespace FollowingTriangle.Editor
         [MenuItem("Following Triangle/Build Sandbox Scene")]
         public static void BuildAndSave()
         {
+            // EditorSceneManager.NewScene は Play モード中に使えない。
+            // ここで止めずに進むと、設定アセットだけ作られてシーンが生成されないという
+            // 中途半端な状態になり、原因が分かりにくい。
+            // Play モードを勝手に終了させることはしない。編集中の Play 状態を
+            // メニュー操作で破棄されるのは予期しない挙動になるため。
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                const string message =
+                    "Play モード中はシーンを生成できません。Play を停止してから再実行してください。";
+
+                Debug.LogError($"[SandboxSceneBuilder] {message}");
+
+                if (!Application.isBatchMode)
+                {
+                    EditorUtility.DisplayDialog("Build Sandbox Scene", message, "OK");
+                }
+
+                return;
+            }
+
+            // 未保存の変更があれば先に確認する。NewScene は現在のシーンを破棄するため。
+            if (!Application.isBatchMode &&
+                !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            {
+                Debug.Log("[SandboxSceneBuilder] ユーザー操作により中止しました。");
+                return;
+            }
+
             EnsureSettingsAsset();
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);

@@ -106,9 +106,53 @@ FollowingTriangle.Tests.EditMode… 単体テスト。Core のみ参照
 
 ## 4. 未解決（実機ビルド前に必要）
 
-- **Android Build Support が未インストール**。
-  `C:\Program Files\Unity\Hub\Editor\6000.3.24f1\Editor\Data\PlaybackEngines\` に
-  `windowsstandalonesupport` しか無い。Quest 3 へビルドするには Unity Hub から
-  Android Build Support（OpenJDK / Android SDK & NDK Tools 含む）を追加する必要がある。
-- XR Plug-in Management の設定アセット（OpenXR ローダー有効化、Meta Quest feature group 有効化）は
-  Android プラットフォームが有効になってからでないと作れない。
+### 4.1 Android Build Support が未インストール
+
+`C:\Program Files\Unity\Hub\Editor\6000.3.24f1\Editor\Data\PlaybackEngines\` に
+`windowsstandalonesupport` しか無い。Unity Hub から Android Build Support
+（OpenJDK / Android SDK & NDK Tools 含む）を追加する必要がある。
+
+これはビルド時だけの問題ではない。**エディタのコンパイルが通らない**。
+
+```
+Library\PackageCache\com.meta.xr.sdk.core@.../Editor/RuntimeOptimizer/PerformanceInsight/CaptureTool.cs(43,28):
+error CS0103: The name 'AndroidExternalToolsSettings' does not exist in the current context
+```
+
+Meta XR SDK 自身のエディタツールが Android モジュール由来の型を参照しているため。
+本実装のアセンブリ（FollowingTriangle.*）は 5 つとも独立してコンパイルに成功することを
+確認済みだが、エディタのドメイン全体がエラー状態になるとテストランナーなどが不安定になる。
+
+### 4.2 XR Plug-in Management のローダーが未登録
+
+仕様書 §1 は「XR Plugin Management：OpenXR、Meta Quest feature group を有効化」を要求するが、
+2026-09-15 時点で **未充足**。`Assets/XR/XRGeneralSettingsPerBuildTarget.asset` の状態：
+
+- `Standalone Providers` の `m_Loaders` が **空**（OpenXR ローダーが登録されていない）
+- **Android のエントリが存在しない**（Android プラットフォームが未インストールのため）
+
+一方 `Assets/XR/Settings/OpenXR Package Settings.asset` では OpenXR の機能自体は有効化済み
+（`MetaXRFeature`, `MetaXRFoveationFeature`, `OculusTouchControllerProximityProfile` が
+Standalone / Android 両方で `m_enabled: 1`）。つまり「機能は有効だがローダーが動かない」状態。
+
+Android モジュール導入後に `Edit > Project Settings > XR Plug-in Management` で
+Android タブの OpenXR にチェックを入れ、生成される設定アセットをコミットすること。
+
+### 4.3 Meta XR SDK の自動セットアップが変更したプロジェクト設定
+
+SDK のインポート時に以下が自動変更された。いずれも本実験の測定には影響しないが、
+差分の由来が分かるよう記録しておく。
+
+| ファイル | 変更内容 |
+|---|---|
+| `ProjectSettings/AudioManager.asset` | スペーシャライザを `Meta XR Audio` に設定。本実験は音声を使わない |
+| `ProjectSettings/TagManager.asset` | Meta の UI キット用タグ（`QDSUI*`）を 16 個追加 |
+| `ProjectSettings/EditorBuildSettings.asset` | XR Management / OpenXR 設定アセットへの参照を追加 |
+| `ProjectSettings/ProjectSettings.asset` | `AndroidPreferredInstallLocation` を変更 |
+| `Assets/Settings/Mobile_RPAsset.asset` | URP アセットのバージョンを 12 → 13 に更新（Unity 側の移行） |
+| `Assets/Resources/*` | Meta XR の各種ランタイム設定アセットを生成 |
+| `Assets/Oculus/OculusProjectConfig.asset` | Meta のプロジェクト設定。ハンドトラッキング設定はここに入る |
+
+`OculusProjectConfig.asset` は仕様書 §1 の
+`Hand Tracking Support = Controllers And Hands` を設定する場所でもある。
+Android プラットフォーム有効化後に設定すること。

@@ -1,0 +1,66 @@
+# ---- Unity ----
+# Generated / machine-local directories. Must never be committed.
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]serSettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# Never ignore .meta files: Unity identifies assets by the GUID stored in them.
+!*.meta
+
+# Asset meta data for files that are ignored anyway
+/[Aa]ssets/AssetStoreTools*
+/[Aa]ssets/Plugins/Editor/JetBrains*
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity3D generated crash report
+sysinfo.txt
+
+# Builds
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Crashlytics
+crashlytics-build.properties
+
+# Packed addressables
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+/[Ss]treamingAssets/aa.meta
+/[Ss]treamingAssets/aa/*
+
+# ---- Experiment data (never commit participant data) ----
+# Recorded stimuli and CSV logs live in Application.persistentDataPath at runtime.
+# If anything is copied into the repo for inspection, keep it out of version control.
+/data/
+*.csv
+!docs/**/*.csv
+
+# ---- OS ----
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

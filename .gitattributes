@@ -1,0 +1,14 @@
+# Auto-detect text files and normalise line endings in the repository.
+* text=auto
+
+# Unity YAML assets: use UnityYAMLMerge if configured, otherwise treat as text.
+*.unity      text merge=unityyamlmerge eol=lf
+*.prefab     text merge=unityyamlmerge eol=lf
+*.asset      text merge=unityyamlmerge eol=lf
+*.meta       text merge=unityyamlmerge eol=lf
+*.mat        text merge=unityyamlmerge eol=lf
+*.controller text merge=unityyamlmerge eol=lf
+
+*.cs         text diff=csharp
+*.json       text
+*.md         text

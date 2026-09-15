@@ -1,0 +1,21 @@
+{
+  "formatVersion": 1,
+  "conditions": [
+    {
+      "conditionId": "C1",
+      "text": "3つの点を合わせてください"
+    },
+    {
+      "conditionId": "C2",
+      "text": "3つの点を三角形と見なし、その三角形を合わせてください"
+    },
+    {
+      "conditionId": "C3",
+      "text": "三角形を合わせてください"
+    }
+  ],
+  "baselinePrompt": "両手を前方に開いて静止してください",
+  "readyPrompt": "準備ができたら実験者にお知らせください",
+  "trialCompletePrompt": "この試行は終了です。少し休んでください",
+  "sessionCompletePrompt": "すべての試行が終了しました。お疲れさまでした"
+}

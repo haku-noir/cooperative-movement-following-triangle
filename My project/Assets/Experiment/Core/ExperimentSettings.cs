@@ -139,6 +139,11 @@ namespace FollowingTriangle.Core
                  "Registration 自体が汚染される。")]
         private bool showOtherTriangleDuringBaseline = false;
 
+        [SerializeField]
+        [Tooltip("追従中に残り時間を被験者に表示する (§10-3)。" +
+                 "既定は off。残り時間が見えると注意配分が課題から時間へ移る。")]
+        private bool showProgressToParticipant = false;
+
         // ------------------------------------------------------------------
         // §0.3 スコープ外
         // ------------------------------------------------------------------
@@ -167,6 +172,7 @@ namespace FollowingTriangle.Core
         public RegistrationMethod RegistrationMethod => registrationMethod;
         public bool RecomputeNeckVertexOnPlayback => recomputeNeckVertexOnPlayback;
         public bool ShowOtherTriangleDuringBaseline => showOtherTriangleDuringBaseline;
+        public bool ShowProgressToParticipant => showProgressToParticipant;
         public Experiment2Parameters Experiment2 => experiment2;
 
         /// <summary>仕様書 §5.4 の 1 試行の総時間 [s]（教示フェーズは被験者ペースなので含まない）。</summary>

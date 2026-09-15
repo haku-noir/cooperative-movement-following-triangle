@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &25459238
+--- !u!1 &36808503
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,68 +127,39 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 25459239}
+  - component: {fileID: 36808505}
+  - component: {fileID: 36808504}
   m_Layer: 0
-  m_Name: RightHandProxy
+  m_Name: Stimulus Catalog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &25459239
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 25459238}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 1.2, z: 0.35}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 765990179}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &300611483
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 300611485}
-  - component: {fileID: 300611484}
-  m_Layer: 0
-  m_Name: Session Input (Keyboard)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &300611484
+--- !u!114 &36808504
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300611483}
+  m_GameObject: {fileID: 36808503}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2bc5169715df6f49bec5c928cf9fa5b, type: 3}
+  m_Script: {fileID: 11500000, guid: f8c7d6a917827e84097498cba93034a9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.KeyboardRecorderInput
-  confirmKey: 1
-  markerKey: 27
-  abortKey: 60
---- !u!4 &300611485
+  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.StimulusCatalog
+  settings: {fileID: 11400000, guid: 7e8c38335bbc75c4a92730b37f066abf, type: 2}
+  stimulusIds:
+  - take1
+  - take2
+  - take3
+--- !u!4 &36808505
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300611483}
+  m_GameObject: {fileID: 36808503}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -197,7 +168,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &765990178
+--- !u!1 &204182096
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -205,8 +176,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 765990179}
-  - component: {fileID: 765990180}
+  - component: {fileID: 204182097}
+  - component: {fileID: 204182098}
   m_Layer: 0
   m_Name: Mock Vertex Source
   m_TagString: Untagged
@@ -214,47 +185,47 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &765990179
+--- !u!4 &204182097
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 765990178}
+  m_GameObject: {fileID: 204182096}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1501810706}
-  - {fileID: 1438217060}
-  - {fileID: 25459239}
+  - {fileID: 340193648}
+  - {fileID: 284260256}
+  - {fileID: 1792542926}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &765990180
+--- !u!114 &204182098
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 765990178}
+  m_GameObject: {fileID: 204182096}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82d525bab9cc1b34782a0e74478eb4a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.MockVertexSource
   settings: {fileID: 11400000, guid: 7e8c38335bbc75c4a92730b37f066abf, type: 2}
-  headProxy: {fileID: 1501810706}
-  leftHandProxy: {fileID: 1438217060}
-  rightHandProxy: {fileID: 25459239}
+  headProxy: {fileID: 340193648}
+  leftHandProxy: {fileID: 284260256}
+  rightHandProxy: {fileID: 1792542926}
   animate: 1
   cycleFrequencyHz: 0.25
   headTranslationAmplitude: 0.15
   headYawAmplitudeDegrees: 40
   headPitchAmplitudeDegrees: 20
   handAmplitude: 0.2
---- !u!1 &930238220
+--- !u!1 &284260255
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -262,8 +233,70 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 930238222}
-  - component: {fileID: 930238221}
+  - component: {fileID: 284260256}
+  m_Layer: 0
+  m_Name: LeftHandProxy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &284260256
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 284260255}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.3, y: 1.2, z: 0.35}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 204182097}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &340193647
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 340193648}
+  m_Layer: 0
+  m_Name: HeadProxy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &340193648
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340193647}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 204182097}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &352583480
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 352583482}
+  - component: {fileID: 352583481}
   m_Layer: 0
   m_Name: Self Triangle (B)
   m_TagString: Untagged
@@ -271,26 +304,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &930238221
+--- !u!114 &352583481
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 930238220}
+  m_GameObject: {fileID: 352583480}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c901add4d1291ec48868970544766afd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.TriangleView
   shader: {fileID: 0}
---- !u!4 &930238222
+--- !u!4 &352583482
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 930238220}
+  m_GameObject: {fileID: 352583480}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -299,7 +332,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1218661972
+--- !u!1 &426210657
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -307,9 +340,290 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1218661975}
-  - component: {fileID: 1218661974}
-  - component: {fileID: 1218661973}
+  - component: {fileID: 426210659}
+  - component: {fileID: 426210658}
+  m_Layer: 0
+  m_Name: Instruction Loader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &426210658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 426210657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802a05502cb2b134ab977a7583b8dcb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.InstructionLoader
+--- !u!4 &426210659
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 426210657}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &671440026
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 671440028}
+  - component: {fileID: 671440027}
+  m_Layer: 0
+  m_Name: HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &671440027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671440026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d470375dd43ce44f805a2f34f0b7afb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.RecorderHud
+  headTransform: {fileID: 340193648}
+  distanceMeters: 1.5
+  verticalOffsetMeters: -0.35
+  characterSize: 0.06
+  normalColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+  warningColor: {r: 1, g: 0.55, b: 0.2, a: 1}
+--- !u!4 &671440028
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671440026}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &929913033
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 929913035}
+  - component: {fileID: 929913034}
+  m_Layer: 0
+  m_Name: Other Triangle (A, recorded)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &929913034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929913033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c901add4d1291ec48868970544766afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.TriangleView
+  shader: {fileID: 0}
+--- !u!4 &929913035
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929913033}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &946493676
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 946493678}
+  - component: {fileID: 946493677}
+  m_Layer: 0
+  m_Name: Stimulus Presenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &946493677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 946493676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 688ab311264332d408eeada3bb7e5793, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.StimulusPresenter
+  settings: {fileID: 11400000, guid: 7e8c38335bbc75c4a92730b37f066abf, type: 2}
+  otherTriangleView: {fileID: 929913034}
+--- !u!4 &946493678
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 946493676}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &982065835
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 982065837}
+  - component: {fileID: 982065836}
+  m_Layer: 0
+  m_Name: Trial Logger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &982065836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982065835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6fe32e3f74b4644b9049efb7222aea1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.TrialLogger
+  settings: {fileID: 11400000, guid: 7e8c38335bbc75c4a92730b37f066abf, type: 2}
+--- !u!4 &982065837
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982065835}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1365059596
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1365059598}
+  - component: {fileID: 1365059597}
+  m_Layer: 0
+  m_Name: Background Room
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1365059597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365059596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4928130e685179d4a938e6491d82d75b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.BackgroundRoom
+  width: 6
+  depth: 6
+  height: 3
+  floorGridCellSize: 0.5
+  wallPatternCellSize: 0.5
+  surfaceColor: {r: 0.32, g: 0.33, b: 0.35, a: 1}
+  lineColor: {r: 0.6, g: 0.62, b: 0.66, a: 1}
+--- !u!4 &1365059598
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365059596}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1538127648
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1538127651}
+  - component: {fileID: 1538127650}
+  - component: {fileID: 1538127649}
   m_Layer: 0
   m_Name: Editor Preview Camera
   m_TagString: MainCamera
@@ -317,21 +631,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1218661973
+--- !u!81 &1538127649
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1218661972}
+  m_GameObject: {fileID: 1538127648}
   m_Enabled: 1
---- !u!20 &1218661974
+--- !u!20 &1538127650
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1218661972}
+  m_GameObject: {fileID: 1538127648}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
@@ -376,13 +690,13 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &1218661975
+--- !u!4 &1538127651
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1218661972}
+  m_GameObject: {fileID: 1538127648}
   serializedVersion: 2
   m_LocalRotation: {x: 0.05233596, y: 0, z: 0, w: 0.9986295}
   m_LocalPosition: {x: 0, y: 1.7, z: -2.6}
@@ -391,7 +705,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1283283049
+--- !u!1 &1718360905
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -399,40 +713,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1283283051}
-  - component: {fileID: 1283283050}
+  - component: {fileID: 1718360907}
+  - component: {fileID: 1718360906}
   m_Layer: 0
-  m_Name: HUD
+  m_Name: Session Input (Keyboard)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1283283050
+--- !u!114 &1718360906
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1283283049}
+  m_GameObject: {fileID: 1718360905}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d470375dd43ce44f805a2f34f0b7afb, type: 3}
+  m_Script: {fileID: 11500000, guid: b2bc5169715df6f49bec5c928cf9fa5b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.RecorderHud
-  headTransform: {fileID: 1501810706}
-  distanceMeters: 1.5
-  verticalOffsetMeters: -0.35
-  characterSize: 0.06
-  normalColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
-  warningColor: {r: 1, g: 0.55, b: 0.2, a: 1}
---- !u!4 &1283283051
+  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.KeyboardRecorderInput
+  confirmKey: 1
+  markerKey: 27
+  abortKey: 60
+--- !u!4 &1718360907
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1283283049}
+  m_GameObject: {fileID: 1718360905}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -441,7 +752,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1438217059
+--- !u!1 &1773844653
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -449,106 +760,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1438217060}
+  - component: {fileID: 1773844655}
+  - component: {fileID: 1773844654}
   m_Layer: 0
-  m_Name: LeftHandProxy
+  m_Name: Experiment Driver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1438217060
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1438217059}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.3, y: 1.2, z: 0.35}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 765990179}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1501810705
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1501810706}
-  m_Layer: 0
-  m_Name: HeadProxy
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1501810706
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1501810705}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 765990179}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1647241376
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1647241378}
-  - component: {fileID: 1647241377}
-  m_Layer: 0
-  m_Name: Playback Verification Driver
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1647241377
+--- !u!114 &1773844654
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1647241376}
+  m_GameObject: {fileID: 1773844653}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d049ad255cabb5b49878c14760be5700, type: 3}
+  m_Script: {fileID: 11500000, guid: 474ce0266e4bcc24bb03863753169f55, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.PlaybackVerificationDriver
+  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.ExperimentDriver
   settings: {fileID: 11400000, guid: 7e8c38335bbc75c4a92730b37f066abf, type: 2}
-  vertexSourceBehaviour: {fileID: 765990180}
-  inputBehaviour: {fileID: 300611484}
-  selfTriangleView: {fileID: 930238221}
-  stimulusPresenter: {fileID: 1846173323}
-  hud: {fileID: 1283283050}
-  recordingPath: 
-  participantId: MOCK-B
+  vertexSourceBehaviour: {fileID: 204182098}
+  inputBehaviour: {fileID: 1718360906}
+  recenterMonitorBehaviour: {fileID: 0}
+  xrRuntimeInfoBehaviour: {fileID: 0}
+  selfTriangleView: {fileID: 352583481}
+  stimulusPresenter: {fileID: 946493677}
+  trialLogger: {fileID: 982065836}
+  instructionLoader: {fileID: 426210658}
+  stimulusCatalog: {fileID: 36808504}
+  hud: {fileID: 671440027}
+  participantIdPrefix: B
+  participantNumber: 1
   reuseExistingProfile: 1
-  condition: 3
---- !u!4 &1647241378
+--- !u!4 &1773844655
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1647241376}
+  m_GameObject: {fileID: 1773844653}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -557,7 +810,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1837917894
+--- !u!1 &1792542925
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -565,150 +818,42 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1837917896}
-  - component: {fileID: 1837917895}
+  - component: {fileID: 1792542926}
   m_Layer: 0
-  m_Name: Background Room
+  m_Name: RightHandProxy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1837917895
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1837917894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4928130e685179d4a938e6491d82d75b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.BackgroundRoom
-  width: 6
-  depth: 6
-  height: 3
-  floorGridCellSize: 0.5
-  wallPatternCellSize: 0.5
-  surfaceColor: {r: 0.32, g: 0.33, b: 0.35, a: 1}
-  lineColor: {r: 0.6, g: 0.62, b: 0.66, a: 1}
---- !u!4 &1837917896
+--- !u!4 &1792542926
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1837917894}
+  m_GameObject: {fileID: 1792542925}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.3, y: 1.2, z: 0.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1846173322
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1846173324}
-  - component: {fileID: 1846173323}
-  m_Layer: 0
-  m_Name: Stimulus Presenter
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1846173323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1846173322}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 688ab311264332d408eeada3bb7e5793, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.StimulusPresenter
-  settings: {fileID: 11400000, guid: 7e8c38335bbc75c4a92730b37f066abf, type: 2}
-  otherTriangleView: {fileID: 1882589764}
---- !u!4 &1846173324
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1846173322}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1882589763
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1882589765}
-  - component: {fileID: 1882589764}
-  m_Layer: 0
-  m_Name: Other Triangle (A, recorded)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1882589764
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1882589763}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c901add4d1291ec48868970544766afd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FollowingTriangle.Runtime::FollowingTriangle.Runtime.TriangleView
-  shader: {fileID: 0}
---- !u!4 &1882589765
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1882589763}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 204182097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1218661975}
-  - {fileID: 1837917896}
-  - {fileID: 765990179}
-  - {fileID: 300611485}
-  - {fileID: 930238222}
-  - {fileID: 1882589765}
-  - {fileID: 1846173324}
-  - {fileID: 1283283051}
-  - {fileID: 1647241378}
+  - {fileID: 1538127651}
+  - {fileID: 1365059598}
+  - {fileID: 204182097}
+  - {fileID: 1718360907}
+  - {fileID: 352583482}
+  - {fileID: 929913035}
+  - {fileID: 946493678}
+  - {fileID: 982065837}
+  - {fileID: 426210659}
+  - {fileID: 36808505}
+  - {fileID: 671440028}
+  - {fileID: 1773844655}

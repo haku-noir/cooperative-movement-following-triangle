@@ -70,9 +70,34 @@ namespace FollowingTriangle.Core
         public string logKind = "trial";
 
         public string participantId = "";
+
+        /// <summary>被験者 ID 末尾の連番。割付行の決定に使った値（§5.5）。</summary>
+        public int participantNumber;
+
+        /// <summary>グレコ・ラテン方格の割付行（0 始まり）。</summary>
+        public int assignmentRow;
+
         public string conditionId = "";
         public string stimulusId = "";
+
+        /// <summary>セッション内の提示順（1 始まり）。順序効果の解析に使う。</summary>
         public int trialIndex;
+
+        /// <summary>
+        /// 実際に被験者へ提示した教示文（§7.4）。
+        /// 教示ファイルを差し替えても、どの試行でどの文言を出したかが追える。
+        /// C1 と C2 の差は教示文だけなので、これは実験操作そのものの記録である。
+        /// </summary>
+        public string instructionText = "";
+
+        /// <summary>教示文を読み込んだファイルのパス。</summary>
+        public string instructionSource = "";
+
+        /// <summary>
+        /// 刺激が 3 本すべて揃っていたか（§5.5）。
+        /// false の試行はカウンターバランスが成立していない。
+        /// </summary>
+        public bool stimulusCatalogComplete = true;
 
         public string recordedAtIso8601 = "";
 

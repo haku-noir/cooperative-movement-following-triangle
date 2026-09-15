@@ -73,9 +73,17 @@ namespace FollowingTriangle.Core
             Comment(builder, "recorded_at", h.recordedAtIso8601);
 
             Comment(builder, "participant_id", h.participantId);
+            Comment(builder, "participant_number", h.participantNumber.ToString(Invariant));
+            Comment(builder, "assignment_row", h.assignmentRow.ToString(Invariant));
+            Comment(builder, "assignment_design", "graeco_latin_square_order3");
             Comment(builder, "condition", h.conditionId);
             Comment(builder, "stimulus_id", h.stimulusId);
+            Comment(builder, "stimulus_catalog_complete", h.stimulusCatalogComplete ? "true" : "false");
             Comment(builder, "trial_index", h.trialIndex.ToString(Invariant));
+
+            // 実際に提示した教示文そのもの（§7.4）。C1 と C2 の差はここだけ。
+            Comment(builder, "instruction_text", SingleLine(h.instructionText));
+            Comment(builder, "instruction_source", h.instructionSource);
 
             // §2.2 頂点定義
             Comment(builder, "neck_offset_d_m", h.neckOffsetD.ToString(PositionFormat, Invariant));
@@ -213,6 +221,18 @@ namespace FollowingTriangle.Core
         private static void Comment(StringBuilder builder, string key, string value)
         {
             builder.Append("# ").Append(key).Append(": ").Append(value ?? "").Append('\n');
+        }
+
+        /// <summary>
+        /// コメント行に入れる文字列から改行を落とす。
+        /// 教示文が複数行だと、2 行目以降が # で始まらないコメント行になり、
+        /// pandas がそれをデータ行として読もうとして壊れる。
+        /// </summary>
+        private static string SingleLine(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return "";
+
+            return value.Replace("\r\n", " / ").Replace('\n', '/').Replace('\r', '/');
         }
     }
 }

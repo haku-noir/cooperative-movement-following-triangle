@@ -75,11 +75,15 @@ CSV が壊れます。この環境のロケールが日本語であることを�
 
 ## 3. エディタ上で CSV を出す（HMD 不要）
 
-段階3 の Playback シーンがそのまま使えます（`Trial Logger` が追加されています）。
+段階3 と同じシーンが使えます。
+
+> 段階5 でシーンとドライバを整理しました。`Build Playback Scene` は
+> **`Build Experiment Scene`** に、`Playback.unity` は `Experiment.unity` に
+> 置き換わっています。試行フローの手順は `docs/stage5_verification.md` §5 を参照。
 
 ### 手順
 
-1. メニュー `Following Triangle > Build Playback Scene`（Play を停止した状態で）
+1. メニュー `Following Triangle > Build Experiment Scene`（Play を停止した状態で）
 2. `Mock Vertex Source` の `Animate` を off → Play → **Space**（B のキャリブレーション 3 秒）
 3. **Space** → 試行開始。基準姿勢 3 秒 → Registration 確定
 4. `Animate` を on にすると、自己三角形が動いて誤差が出る

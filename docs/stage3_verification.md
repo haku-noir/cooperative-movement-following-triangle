@@ -75,8 +75,14 @@
 
 ### シーンの生成
 
-メニュー **`Following Triangle > Build Playback Scene`**（Play を停止した状態で）。
-`Assets/Experiment/Scenes/Playback.unity` が生成される。
+メニュー **`Following Triangle > Build Experiment Scene`**（Play を停止した状態で）。
+`Assets/Experiment/Scenes/Experiment.unity` が生成される。
+
+> 段階5 でシーンとドライバを整理しました。この手順書が書かれた時点の
+> `Build Playback Scene` / `Playback.unity` / `PlaybackVerificationDriver` は廃止され、
+> 本番の `ExperimentDriver` に一本化されています。以下の手順は
+> `Following Triangle > Build Boot Scene` と `Register Scenes In Build Settings` を
+> 併せて実行したうえで、`docs/stage5_verification.md` §5 の流れで行ってください。
 
 構成：
 

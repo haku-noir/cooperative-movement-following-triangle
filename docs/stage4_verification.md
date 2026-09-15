@@ -158,10 +158,99 @@ CSV の保存先は `Application.persistentDataPath/logs/`。
 
 ---
 
-## 5. 記録開始のタイミングについて
+## 5. 出力される CSV は試行ごとに 2 本
 
-CSV の記録は **Registration が確定した時点、つまり導入区間の頭から** 始まります。
-基準姿勢フェーズ（最初の 3 秒）は記録されません。その間はまだ変換が決まっておらず、
-A 側の座標が存在しないためです。
+| ファイル | 内容 | 区間 |
+|---|---|---|
+| `..._C3_take1.csv` | 追従課題のログ | 導入区間の頭から試行終了まで |
+| `..._C3_take1_registration.csv` | 基準姿勢フェーズのログ | 試行開始から基準姿勢の終わりまで |
 
-基準姿勢の質はヘッダの `registration_residual_rms_m` に残ります。
+### なぜ別ファイルなのか
+
+基準姿勢は追従課題ではありません。この区間では A の三角形がまだ見えておらず、
+算出される「誤差」は追従成績ではなく **Registration の当てはまり具合** を表す量です。
+同じファイルに混ぜると、後処理で取り違えて課題成績に数えてしまう余地が残ります。
+
+### 列構成は試行ログと完全に同一
+
+同じ読み込みコードで扱えるほうが解析側の間違いが減るため、列は 1 つも変えていません。
+区別はファイル名の `_registration` と、ヘッダの `# log_kind:` で行います。
+
+```python
+import pandas as pd
+
+def load(path):
+    meta = {}
+    with open(path, encoding='utf-8') as f:
+        for line in f:
+            if not line.startswith('#'):
+                break
+            k, _, v = line[2:].partition(': ')
+            meta[k.strip()] = v.strip()
+    return meta, pd.read_csv(path, comment='#')
+
+meta, df = load(path)
+assert meta['log_kind'] in ('trial', 'registration')
+```
+
+### 「平均に採用されたか」は別列を持たない
+
+Registration の平均に入るのは両手が高信頼だったフレームだけですが、
+それは `hand_L_tracked` / `hand_L_conf` / `hand_R_tracked` / `hand_R_conf` から
+厳密に導出できます。冗長な列は足していません。
+
+```python
+accepted = (df.hand_L_tracked == 1) & (df.hand_R_tracked == 1) \
+         & (df.hand_L_conf == 1) & (df.hand_R_conf == 1)
+```
+
+採用数と総フレーム数はヘッダにも入ります
+（`# baseline_accepted_count`, `# baseline_frame_count`）。
+差が大きい試行はトラッキングが不安定で、Registration の信頼性が落ちています。
+
+### Registration ログのヘッダにある診断情報
+
+```
+# log_kind: registration
+# registration_method: ThreeVertexLeastSquares
+# registration_residual_rms_m: 0.003100
+# registration_residual_per_vertex_m: 0.002800 0.003800 0.002500
+# registration_reference_A_v0: 0.000000 1.450000 0.000000
+# registration_baseline_B_v0: 0.010000 1.500000 0.000000
+# baseline_frame_count: 270
+# baseline_accepted_count: 262
+```
+
+頂点ごとの残差を出しているのは、RMS だけではどの頂点で合っていないのかが
+分からないためです。推定法によって残差の配分が変わる（首頂点固定法なら V0 が 0）ので、
+手法の選択が妥当だったかを後から評価できます。
+
+### 確認 15：基準姿勢ログの中身
+
+試行を 1 本走らせると Console に 2 行出ます。
+
+```
+基準姿勢ログを保存しました (270 行, うち平均採用 270 件): .../..._registration.csv
+試行ログを保存しました (8100 行): .../....csv
+```
+
+`_registration.csv` を開いて確認する点：
+
+- `# log_kind: registration`
+- 全行の `phase_marker` が `baseline`
+- `t` が 0 付近から `baseline_hold_s` まで
+- `dist_sum` が小さい値で安定していること（Registration が効いていれば数 mm 台）
+- `# registration_residual_per_vertex_m` の 3 値が近いこと
+  （等重み最小二乗の場合。首頂点固定法なら 1 つ目が 0）
+
+### 再センタリングの扱い
+
+基準姿勢中に再センタリングが起きると、蓄積した B の三角形が途中で別の座標系のものに
+入れ替わります。この場合 Registration ログのヘッダが
+
+```
+# trial_valid: false
+# invalid_reason: 基準姿勢中に再センタリングが 1 回発生しました (§1)。この Registration は無効です。
+```
+
+となり、ファイル名にも `_INVALID` が付きます。

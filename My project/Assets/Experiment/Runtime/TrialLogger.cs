@@ -23,19 +23,46 @@ namespace FollowingTriangle.Runtime
     {
         [SerializeField] private ExperimentSettings settings;
 
+        /// <summary>
+        /// 基準姿勢フェーズで取り込んだ生サンプル。
+        ///
+        /// この時点では Registration がまだ確定しておらず A 側の座標が存在しないため、
+        /// 行に組み立てられない。確定後に遡って変換を適用する。
+        /// </summary>
+        public readonly struct BaselineCapture
+        {
+            public readonly double ElapsedSeconds;
+            public readonly BodyTriangleSample Sample;
+            public readonly int RecenterFlag;
+
+            public BaselineCapture(double elapsedSeconds, in BodyTriangleSample sample, int recenterFlag)
+            {
+                ElapsedSeconds = elapsedSeconds;
+                Sample = sample;
+                RecenterFlag = recenterFlag;
+            }
+        }
+
         private readonly List<TrialLogRow> rows = new List<TrialLogRow>();
+        private readonly List<BaselineCapture> baselineCaptures = new List<BaselineCapture>();
         private TrialLogHeader header;
         private float normalizationLength;
         private double lastTimestamp;
         private double firstTimestamp;
         private double maxInterval;
         private int pendingRecenterFlag;
+        private int baselineRecenterCount;
 
         public bool IsRecording { get; private set; }
 
         public int RowCount => rows.Count;
 
         public string LastSavedPath { get; private set; }
+
+        /// <summary>基準姿勢ログの保存先。<see cref="WriteBaselineLog"/> の後に有効。</summary>
+        public string LastBaselineLogPath { get; private set; }
+
+        public int BaselineCaptureCount => baselineCaptures.Count;
 
         /// <summary>直近フレームの誤差量。デバッグ表示や検証に使う。</summary>
         public FrameMetrics LatestMetrics { get; private set; }
@@ -79,7 +106,11 @@ namespace FollowingTriangle.Runtime
         public void NotifyRecenter()
         {
             pendingRecenterFlag = 1;
-            if (header != null) header.recenterCount++;
+
+            // 基準姿勢フェーズ中はまだ試行ヘッダが存在しない。そこで起きた再センタリングは
+            // Registration そのものを無効にするので、別に数えて基準姿勢ログへ載せる。
+            if (IsRecording && header != null) header.recenterCount++;
+            else baselineRecenterCount++;
         }
 
         /// <summary>
@@ -110,10 +141,26 @@ namespace FollowingTriangle.Runtime
 
             lastTimestamp = elapsedSeconds;
 
-            var metrics = FrameMetrics.Compute(transformedA, participantB, normalizationLength);
-            LatestMetrics = metrics;
+            var row = BuildRow(
+                elapsedSeconds, phaseMarker, transformedA, participantB,
+                normalizationLength, pendingRecenterFlag);
 
-            rows.Add(new TrialLogRow
+            LatestMetrics = row.metrics;
+            rows.Add(row);
+
+            pendingRecenterFlag = 0;
+        }
+
+        /// <summary>
+        /// 行を組み立てる。試行ログと基準姿勢ログで同じ経路を通す。
+        /// 2 つのログの列の意味がずれないよう、組み立ては 1 箇所に閉じておく。
+        /// </summary>
+        private static TrialLogRow BuildRow(
+            double elapsedSeconds, string phaseMarker,
+            in BodyTriangleSample transformedA, in BodyTriangleSample participantB,
+            float normalizationLength, int recenterFlag)
+        {
+            return new TrialLogRow
             {
                 t = elapsedSeconds,
                 phaseMarker = phaseMarker,
@@ -130,17 +177,149 @@ namespace FollowingTriangle.Runtime
                 v1B = participantB.v1,
                 v2B = participantB.v2,
 
-                metrics = metrics,
+                metrics = FrameMetrics.Compute(transformedA, participantB, normalizationLength),
 
                 handLeftTracked = participantB.leftHand.isTracked,
                 handLeftConfidence = participantB.leftHand.ConfidenceNumeric,
                 handRightTracked = participantB.rightHand.isTracked,
                 handRightConfidence = participantB.rightHand.ConfidenceNumeric,
 
-                recenterFlag = pendingRecenterFlag,
-            });
+                recenterFlag = recenterFlag,
+            };
+        }
 
+        // ------------------------------------------------------------------
+        // 基準姿勢フェーズのログ（§5.3）
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// 基準姿勢フェーズの取り込みを開始する。試行の開始時に呼ぶ。
+        /// </summary>
+        public void BeginBaselineCapture()
+        {
+            baselineCaptures.Clear();
+            baselineRecenterCount = 0;
             pendingRecenterFlag = 0;
+            LastBaselineLogPath = null;
+        }
+
+        /// <summary>
+        /// 基準姿勢フェーズの 1 フレームを取り込む。
+        ///
+        /// 低信頼のフレームも捨てずに取り込む。Registration の平均に採用されたかどうかは
+        /// hand_L_conf / hand_R_conf 列から後処理で厳密に判別できるので、
+        /// 採用フラグを別に持つ必要はない。捨ててしまうと「何フレーム落ちたのか」が
+        /// 分からなくなる。
+        /// </summary>
+        public void CaptureBaselineSample(double elapsedSeconds, in BodyTriangleSample participantB)
+        {
+            baselineCaptures.Add(new BaselineCapture(elapsedSeconds, participantB, pendingRecenterFlag));
+            pendingRecenterFlag = 0;
+        }
+
+        /// <summary>
+        /// 基準姿勢フェーズのログを別ファイルとして書き出す。
+        ///
+        /// 試行ログとは別ファイルにする理由：基準姿勢は追従課題ではない。
+        /// A の三角形はまだ見えておらず、この区間の「誤差」は追従成績ではなく
+        /// Registration の当てはまり具合を表す量である。同じファイルに混ぜると、
+        /// 後処理で取り違えて課題成績に数えてしまう余地が残る。
+        ///
+        /// 列構成は試行ログと完全に同一にしてある。同じ読み込みコードで扱えるほうが
+        /// 解析側の間違いが減る。区別はファイル名と、ヘッダの log_kind で行う。
+        /// </summary>
+        /// <param name="baselineHeader">
+        /// ヘッダ。log_kind は呼び出し側で "registration" にしておくこと。
+        /// </param>
+        /// <param name="normalizationLengthMeters">誤差の正規化分母 [m]。試行ログと同じ値。</param>
+        /// <param name="transformedAAt">
+        /// 経過時刻から、変換適用後の A のサンプルを返す関数。
+        /// Registration が確定してから呼ぶこと。
+        /// </param>
+        public bool WriteBaselineLog(
+            TrialLogHeader baselineHeader, float normalizationLengthMeters,
+            Func<double, BodyTriangleSample> transformedAAt,
+            out string savedPath, out string error)
+        {
+            savedPath = null;
+
+            if (baselineHeader == null)
+            {
+                error = "ヘッダがありません。";
+                return false;
+            }
+
+            if (baselineCaptures.Count == 0)
+            {
+                error = "基準姿勢のサンプルがありません。";
+                return false;
+            }
+
+            if (transformedAAt == null)
+            {
+                error = "A のサンプル取得関数が未指定です。";
+                return false;
+            }
+
+            var baselineRows = new List<TrialLogRow>(baselineCaptures.Count);
+            double maxBaselineInterval = 0.0;
+
+            for (int i = 0; i < baselineCaptures.Count; i++)
+            {
+                var capture = baselineCaptures[i];
+
+                if (i > 0)
+                {
+                    double interval = capture.ElapsedSeconds - baselineCaptures[i - 1].ElapsedSeconds;
+                    if (interval > maxBaselineInterval) maxBaselineInterval = interval;
+                }
+
+                baselineRows.Add(BuildRow(
+                    capture.ElapsedSeconds, RecordingSchedule.BaselinePhaseId,
+                    transformedAAt(capture.ElapsedSeconds), capture.Sample,
+                    normalizationLengthMeters, capture.RecenterFlag));
+            }
+
+            double duration = baselineCaptures[baselineCaptures.Count - 1].ElapsedSeconds
+                              - baselineCaptures[0].ElapsedSeconds;
+
+            baselineHeader.meanFrameRateHz =
+                duration > 0.0 ? (baselineRows.Count - 1) / duration : 0.0;
+            baselineHeader.maxFrameIntervalSeconds = maxBaselineInterval;
+            baselineHeader.recenterCount = baselineRecenterCount;
+
+            if (baselineRecenterCount > 0)
+            {
+                // 基準姿勢中にワールド原点が動いたということは、蓄積した B の三角形が
+                // 途中で別の座標系のものに入れ替わっている。この Registration は使えない。
+                baselineHeader.trialValid = false;
+                baselineHeader.invalidReason =
+                    $"基準姿勢中に再センタリングが {baselineRecenterCount} 回発生しました (§1)。" +
+                    "この Registration は無効です。";
+            }
+
+            try
+            {
+                string directory = DirectoryFor(settings);
+                Directory.CreateDirectory(directory);
+
+                string path = MakeUnique(
+                    Path.Combine(directory, BuildFileName(baselineHeader, "_registration")));
+
+                File.WriteAllText(
+                    path, TrialCsvWriter.Write(baselineHeader, baselineRows),
+                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+
+                savedPath = path;
+                LastBaselineLogPath = path;
+                error = null;
+                return true;
+            }
+            catch (Exception exception)
+            {
+                error = $"基準姿勢ログの書き出しに失敗しました: {exception.Message}";
+                return false;
+            }
         }
 
         /// <summary>試行を締めて CSV を書き出す。</summary>
@@ -172,7 +351,7 @@ namespace FollowingTriangle.Runtime
                 string directory = DirectoryFor(settings);
                 Directory.CreateDirectory(directory);
 
-                string path = MakeUnique(Path.Combine(directory, BuildFileName(header)));
+                string path = MakeUnique(Path.Combine(directory, BuildFileName(header, "")));
                 string csv = TrialCsvWriter.Write(header, rows);
 
                 // UTF-8 BOM なし。解析側（Python 等）が素直に読めるようにするため。
@@ -196,7 +375,7 @@ namespace FollowingTriangle.Runtime
             return Path.Combine(Application.persistentDataPath, name);
         }
 
-        public static string BuildFileName(TrialLogHeader header)
+        public static string BuildFileName(TrialLogHeader header, string suffix)
         {
             string participant = Sanitize(header.participantId, "participant");
             string condition = Sanitize(header.conditionId, "cond");
@@ -205,7 +384,7 @@ namespace FollowingTriangle.Runtime
             string validity = header.trialValid ? "" : "_INVALID";
 
             return $"{stamp}_{participant}_trial{header.trialIndex:D2}_" +
-                   $"{condition}_{stimulus}{validity}.csv";
+                   $"{condition}_{stimulus}{suffix}{validity}.csv";
         }
 
         private static string MakeUnique(string path)

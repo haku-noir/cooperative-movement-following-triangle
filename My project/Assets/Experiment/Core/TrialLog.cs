@@ -60,6 +60,15 @@ namespace FollowingTriangle.Core
     /// </summary>
     public class TrialLogHeader
     {
+        /// <summary>
+        /// このファイルが何のログか。"trial"（追従課題）または "registration"（基準姿勢）。
+        ///
+        /// 2 つのログは列構成が完全に同一なので、ファイル名だけでなく中身でも
+        /// 区別できるようにしておく。基準姿勢のデータを追従精度の解析に混ぜてしまうと、
+        /// A がまだ見えていない区間の「誤差」を課題成績として数えることになる。
+        /// </summary>
+        public string logKind = "trial";
+
         public string participantId = "";
         public string conditionId = "";
         public string stimulusId = "";
@@ -83,7 +92,26 @@ namespace FollowingTriangle.Core
         // §5.3
         public string registrationMethod = "";
         public float registrationResidualRms;
+
+        /// <summary>頂点ごとの Registration 残差 [m]（x = V0, y = V1, z = V2）。</summary>
+        public Vector3 registrationResidualPerVertex;
+
         public StimulusTransform transform;
+
+        /// <summary>Registration に使った A の基準三角形（変換前、録画の座標系）。</summary>
+        public Triangle referenceTriangleA;
+
+        /// <summary>Registration に使った B の基準三角形（3 s の平均）。</summary>
+        public Triangle baselineTriangleB;
+
+        /// <summary>基準姿勢フェーズの総フレーム数。</summary>
+        public int baselineFrameCount;
+
+        /// <summary>
+        /// そのうち平均に採用されたサンプル数。両手が高信頼だったフレームのみ。
+        /// 総フレーム数との差が大きい試行は Registration の信頼性が低い。
+        /// </summary>
+        public int baselineAcceptedCount;
 
         // §1 / §6.2
         public string sdkVersion = "";

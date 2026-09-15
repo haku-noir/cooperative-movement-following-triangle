@@ -44,7 +44,14 @@ namespace FollowingTriangle.Runtime
         /// <summary>Registration に使った B 側の基準三角形。</summary>
         public Triangle BaselineB { get; private set; }
 
+        /// <summary>平均に採用された基準姿勢サンプル数（両手が高信頼だったもの）。</summary>
         public int BaselineSampleCount => baselineAccumulator.SampleCount;
+
+        /// <summary>
+        /// 基準姿勢フェーズで受け取った総フレーム数。採用数との差が大きい試行は
+        /// トラッキングが不安定だったということで、Registration の信頼性が落ちる。
+        /// </summary>
+        public int BaselineFrameCount { get; private set; }
 
         public RecordingFile Recording => playback?.Recording;
 
@@ -96,6 +103,7 @@ namespace FollowingTriangle.Runtime
         public void BeginBaseline()
         {
             baselineAccumulator.Reset();
+            BaselineFrameCount = 0;
             IsRegistered = false;
             HasTransformedSample = false;
             playback?.Rewind();
@@ -110,6 +118,8 @@ namespace FollowingTriangle.Runtime
         /// </summary>
         public bool AddBaselineSample(in BodyTriangleSample sample)
         {
+            BaselineFrameCount++;
+
             if (!sample.leftHand.isTracked || !sample.rightHand.isTracked) return false;
             if (sample.leftHand.confidence != HandConfidence.High) return false;
             if (sample.rightHand.confidence != HandConfidence.High) return false;
@@ -185,12 +195,7 @@ namespace FollowingTriangle.Runtime
         /// <param name="elapsedSeconds">試行開始からの経過時刻 [s]。</param>
         public bool Tick(double elapsedSeconds, out BodyTriangleSample transformed)
         {
-            transformed = default;
-
-            if (playback == null || !IsRegistered) return false;
-
-            var raw = playback.SampleAt(elapsedSeconds);
-            transformed = Transform.Apply(raw);
+            if (!TrySampleTransformed(elapsedSeconds, out transformed)) return false;
 
             LatestTransformedSample = transformed;
             HasTransformedSample = true;
@@ -202,6 +207,28 @@ namespace FollowingTriangle.Runtime
 
             return true;
         }
+
+        /// <summary>
+        /// 指定時刻の A のサンプルを、変換を適用した状態で取り出す。描画は行わない。
+        ///
+        /// 基準姿勢フェーズのログを Registration 確定後に遡って作るために使う。
+        /// 基準姿勢の最中はまだ変換が決まっていないので、その場では A 側の座標を出せない。
+        /// </summary>
+        public bool TrySampleTransformed(double elapsedSeconds, out BodyTriangleSample transformed)
+        {
+            transformed = default;
+
+            if (playback == null || !IsRegistered) return false;
+
+            transformed = Transform.Apply(playback.SampleAt(elapsedSeconds));
+            return true;
+        }
+
+        /// <summary>頂点ごとの Registration 残差 [m]（x = V0, y = V1, z = V2）。</summary>
+        public Vector3 RegistrationResidualPerVertex =>
+            IsRegistered
+                ? Registration.ResidualPerVertex(Transform, ReferenceA, BaselineB)
+                : Vector3.zero;
 
         /// <summary>
         /// 描画パラメータを適用する。自己三角形と同一の <see cref="TriangleVisualConfig"/> を

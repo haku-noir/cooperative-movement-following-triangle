@@ -194,12 +194,29 @@ namespace FollowingTriangle.Core
         public static float ResidualRms(
             in StimulusTransform transform, in Triangle referenceA, in Triangle baselineB)
         {
-            float sum = 0f;
-            sum += (transform.Apply(referenceA.V0) - baselineB.V0).sqrMagnitude;
-            sum += (transform.Apply(referenceA.V1) - baselineB.V1).sqrMagnitude;
-            sum += (transform.Apply(referenceA.V2) - baselineB.V2).sqrMagnitude;
+            var perVertex = ResidualPerVertex(transform, referenceA, baselineB);
+
+            float sum = perVertex.x * perVertex.x
+                        + perVertex.y * perVertex.y
+                        + perVertex.z * perVertex.z;
 
             return Mathf.Sqrt(sum / 3f);
+        }
+
+        /// <summary>
+        /// 頂点ごとの残差 [m]（x = V0, y = V1, z = V2）。
+        ///
+        /// RMS だけだと、どの頂点で合っていないのかが分からない。推定法によって
+        /// 残差の配分が変わる（首頂点固定法なら V0 が 0 になる）ので、
+        /// 手法の選択が妥当だったかを後から評価するために内訳を残す。
+        /// </summary>
+        public static Vector3 ResidualPerVertex(
+            in StimulusTransform transform, in Triangle referenceA, in Triangle baselineB)
+        {
+            return new Vector3(
+                Vector3.Distance(transform.Apply(referenceA.V0), baselineB.V0),
+                Vector3.Distance(transform.Apply(referenceA.V1), baselineB.V1),
+                Vector3.Distance(transform.Apply(referenceA.V2), baselineB.V2));
         }
     }
 }

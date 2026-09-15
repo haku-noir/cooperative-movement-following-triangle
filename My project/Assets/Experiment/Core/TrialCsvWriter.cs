@@ -67,6 +67,9 @@ namespace FollowingTriangle.Core
         public static void AppendHeaderComments(StringBuilder builder, TrialLogHeader h)
         {
             Comment(builder, "format", "following-triangle-trial-log v1");
+
+            // 追従課題のログか、基準姿勢のログか。列構成は同一なので中身で区別できるようにする。
+            Comment(builder, "log_kind", h.logKind);
             Comment(builder, "recorded_at", h.recordedAtIso8601);
 
             Comment(builder, "participant_id", h.participantId);
@@ -95,6 +98,16 @@ namespace FollowingTriangle.Core
             Comment(builder, "registration_method", h.registrationMethod);
             Comment(builder, "registration_residual_rms_m",
                 h.registrationResidualRms.ToString(PositionFormat, Invariant));
+            Comment(builder, "registration_residual_per_vertex_m",
+                FormatVector(h.registrationResidualPerVertex));
+            Comment(builder, "registration_reference_A_v0", FormatVector(h.referenceTriangleA.V0));
+            Comment(builder, "registration_reference_A_v1", FormatVector(h.referenceTriangleA.V1));
+            Comment(builder, "registration_reference_A_v2", FormatVector(h.referenceTriangleA.V2));
+            Comment(builder, "registration_baseline_B_v0", FormatVector(h.baselineTriangleB.V0));
+            Comment(builder, "registration_baseline_B_v1", FormatVector(h.baselineTriangleB.V1));
+            Comment(builder, "registration_baseline_B_v2", FormatVector(h.baselineTriangleB.V2));
+            Comment(builder, "baseline_frame_count", h.baselineFrameCount.ToString(Invariant));
+            Comment(builder, "baseline_accepted_count", h.baselineAcceptedCount.ToString(Invariant));
             Comment(builder, "transform_scale", h.transform.scale.ToString("F6", Invariant));
             Comment(builder, "transform_scale_pivot", FormatVector(h.transform.scalePivot));
             Comment(builder, "transform_yaw_deg", h.transform.yawDegrees.ToString(AngleFormat, Invariant));

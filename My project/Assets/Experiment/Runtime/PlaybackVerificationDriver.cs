@@ -270,6 +270,8 @@ namespace FollowingTriangle.Runtime
         {
             trialStartTimestamp = sample.timestampSeconds;
             stimulusPresenter.BeginBaseline();
+            trialLogger?.BeginBaselineCapture();
+            recenterMonitor?.ResetPerTrialState();
             phase = Phase.Baseline;
         }
 
@@ -282,6 +284,10 @@ namespace FollowingTriangle.Runtime
         {
             double elapsed = sample.timestampSeconds - trialStartTimestamp;
             stimulusPresenter.AddBaselineSample(sample);
+
+            // 低信頼のフレームも含めて全部取り込む。平均に採用されたかどうかは
+            // hand_*_conf 列から後処理で判別できる。捨てると何フレーム落ちたか分からなくなる。
+            trialLogger?.CaptureBaselineSample(elapsed, sample);
 
             if (elapsed < settings.BaselineHoldSeconds)
             {
@@ -300,8 +306,40 @@ namespace FollowingTriangle.Runtime
             }
 
             stimulusPresenter.SetVisible(true);
+            WriteBaselineLog();
             BeginLogging();
             phase = Phase.Playing;
+        }
+
+        /// <summary>
+        /// 基準姿勢フェーズのログを別ファイルとして書き出す（§5.3 の検証用）。
+        ///
+        /// Registration が確定して初めて A 側の座標が決まるので、ここで遡って書く。
+        /// 追従課題のログとは別ファイルにしてある。基準姿勢は追従課題ではなく、
+        /// この区間の「誤差」は Registration の当てはまり具合を表す量だからである。
+        /// </summary>
+        private void WriteBaselineLog()
+        {
+            if (trialLogger == null || trialLogger.BaselineCaptureCount == 0) return;
+
+            var header = BuildHeader("registration");
+
+            bool written = trialLogger.WriteBaselineLog(
+                header,
+                profile.calibration.characteristicLength,
+                elapsed => stimulusPresenter.TrySampleTransformed(elapsed, out var a) ? a : default,
+                out string path, out string error);
+
+            if (!written)
+            {
+                Debug.LogError($"[{nameof(PlaybackVerificationDriver)}] {error}");
+                return;
+            }
+
+            Debug.Log(
+                $"[{nameof(PlaybackVerificationDriver)}] 基準姿勢ログを保存しました " +
+                $"({trialLogger.BaselineCaptureCount} 行, " +
+                $"うち平均採用 {stimulusPresenter.BaselineSampleCount} 件): {path}");
         }
 
         /// <summary>
@@ -316,11 +354,22 @@ namespace FollowingTriangle.Runtime
         {
             if (trialLogger == null) return;
 
+            trialLogger.BeginTrial(BuildHeader("trial"), profile.calibration.characteristicLength);
+        }
+
+        /// <summary>
+        /// CSV ヘッダを組み立てる。試行ログと基準姿勢ログで同じものを使い、
+        /// <paramref name="logKind"/> だけを変える。両者のメタデータがずれると、
+        /// 後処理でどちらの Registration の話をしているのか分からなくなる。
+        /// </summary>
+        private TrialLogHeader BuildHeader(string logKind)
+        {
             var recording = stimulusPresenter.Recording;
             var calibrationA = recording.metadata.calibration;
 
-            var header = new TrialLogHeader
+            return new TrialLogHeader
             {
+                logKind = logKind,
                 participantId = profile.participantId,
                 conditionId = condition.ToString(),
                 stimulusId = recording.metadata.recordingId,
@@ -342,6 +391,11 @@ namespace FollowingTriangle.Runtime
 
                 registrationMethod = settings.RegistrationMethod.ToString(),
                 registrationResidualRms = stimulusPresenter.RegistrationResidualRms,
+                registrationResidualPerVertex = stimulusPresenter.RegistrationResidualPerVertex,
+                referenceTriangleA = stimulusPresenter.ReferenceA,
+                baselineTriangleB = stimulusPresenter.BaselineB,
+                baselineFrameCount = stimulusPresenter.BaselineFrameCount,
+                baselineAcceptedCount = stimulusPresenter.BaselineSampleCount,
                 transform = stimulusPresenter.Transform,
 
                 sdkVersion = xrRuntimeInfo?.SdkVersion ?? "unknown",
@@ -360,19 +414,22 @@ namespace FollowingTriangle.Runtime
                 performerId = recording.metadata.performerId,
                 recordingFileName = System.IO.Path.GetFileName(ResolveRecordingPath()),
             };
-
-            recenterMonitor?.ResetPerTrialState();
-            trialLogger.BeginTrial(header, profile.calibration.characteristicLength);
         }
 
         private void OnRecentered(double timestamp)
         {
-            if (trialLogger == null || !trialLogger.IsRecording) return;
+            if (trialLogger == null) return;
+            if (phase != Phase.Baseline && phase != Phase.Playing) return;
 
             trialLogger.NotifyRecenter();
+
+            string when = phase == Phase.Baseline
+                ? "基準姿勢中。Registration が無効になります"
+                : "追従中。この試行は無効フラグ付きで保存されます";
+
             Debug.LogError(
-                $"[{nameof(PlaybackVerificationDriver)}] 試行中に再センタリングが発生しました " +
-                $"(t={timestamp:F3} s)。この試行は無効フラグ付きで保存されます (§1)。");
+                $"[{nameof(PlaybackVerificationDriver)}] 再センタリングが発生しました " +
+                $"(t={timestamp:F3} s, {when}) (§1)。");
         }
 
         private void OnDestroy()

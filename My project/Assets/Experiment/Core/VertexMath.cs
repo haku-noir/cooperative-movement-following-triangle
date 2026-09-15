@@ -36,5 +36,54 @@ namespace FollowingTriangle.Core
         {
             return 0.5f * (Vector3.Distance(v1, v0) + Vector3.Distance(v2, v0));
         }
+
+        /// <summary>
+        /// 三角形の面積 [m^2]（仕様書 §6.1-4）。退化検出用。
+        /// </summary>
+        public static float Area(Vector3 v0, Vector3 v1, Vector3 v2)
+        {
+            return 0.5f * Vector3.Cross(v1 - v0, v2 - v0).magnitude;
+        }
+
+        /// <summary>
+        /// 三角形の最小内角 [度]（仕様書 §6.1-4, §7.2）。
+        ///
+        /// 3 頂点が一直線に近づくと Procrustes の回転成分が不定になる。
+        /// その区間を後処理で識別できるよう、毎フレーム記録する。
+        ///
+        /// **ここで閾値判定はしない。** 仕様書 §7.2 は例として 10 度を挙げているが、
+        /// 閾値を決めるのは後処理の仕事であり（§6.3）、アプリは角度そのものを出すだけ。
+        /// 実行時の警告表示も行わない。被験者への干渉になるため。
+        /// </summary>
+        public static float MinInteriorAngleDegrees(Vector3 v0, Vector3 v1, Vector3 v2)
+        {
+            float a0 = AngleAt(v0, v1, v2);
+            float a1 = AngleAt(v1, v2, v0);
+            float a2 = AngleAt(v2, v0, v1);
+
+            return Mathf.Min(a0, Mathf.Min(a1, a2));
+        }
+
+        /// <summary><paramref name="corner"/> における内角 [度]。</summary>
+        private static float AngleAt(Vector3 corner, Vector3 other1, Vector3 other2)
+        {
+            Vector3 e1 = other1 - corner;
+            Vector3 e2 = other2 - corner;
+
+            // 頂点が重なっている場合は角度が定義できない。0 度を返し、
+            // 退化していることが最小内角の値として見えるようにする。
+            if (e1.sqrMagnitude < 1e-20f || e2.sqrMagnitude < 1e-20f) return 0f;
+
+            return Vector3.Angle(e1, e2);
+        }
+
+        /// <summary>
+        /// 2 つの姿勢の前方ベクトルのなす角 [度]（仕様書 §6.1-3）。
+        /// 課題そのものではなく事後評価用の指標。
+        /// </summary>
+        public static float ForwardDirectionAngleDegrees(Quaternion a, Quaternion b)
+        {
+            return Vector3.Angle(a * Vector3.forward, b * Vector3.forward);
+        }
     }
 }

@@ -10,9 +10,10 @@ namespace FollowingTriangle.Runtime
     ///
     /// **これは本番の試行フローではない。** 教示提示、条件のラテン方格割付、
     /// 試行間の進行制御（仕様書 §5.4, §5.5）は段階5 で実装し、このクラスは置き換わる。
-    /// ここにあるのは「基準姿勢 → Registration → 再生」の 1 本を通すだけの最小構成。
+    /// ここにあるのは「基準姿勢 → Registration → 再生 → CSV 出力」の 1 本を通すだけの最小構成。
     ///
-    /// 誤差算出と CSV 出力（§6）は段階4。ここでは何も記録しない。
+    /// 誤差算出と CSV 出力（§6）は <see cref="TrialLogger"/> が担当する。
+    /// そちらは段階5 でもそのまま使うので、置き換わるのはこのドライバだけ。
     /// </summary>
     [DisallowMultipleComponent]
     public class PlaybackVerificationDriver : MonoBehaviour
@@ -37,9 +38,20 @@ namespace FollowingTriangle.Runtime
         [Tooltip("IRecorderInput を実装した MonoBehaviour。確定 / 中断に使う。")]
         private MonoBehaviour inputBehaviour;
 
+        [SerializeField]
+        [Tooltip("IRecenterMonitor を実装した MonoBehaviour（実機では XrRuntimeConfig）。" +
+                 "未設定でも動作するが、再センタリング検出が無効になる (§1)。")]
+        private MonoBehaviour recenterMonitorBehaviour;
+
+        [SerializeField]
+        [Tooltip("IXrRuntimeInfo を実装した MonoBehaviour。CSV ヘッダの SDK バージョンと" +
+                 "実効リフレッシュレートに使う (§6.2)。")]
+        private MonoBehaviour xrRuntimeInfoBehaviour;
+
         [SerializeField] private TriangleView selfTriangleView;
         [SerializeField] private StimulusPresenter stimulusPresenter;
         [SerializeField] private RecorderHud hud;
+        [SerializeField] private TrialLogger trialLogger;
 
         [Header("刺激")]
         [SerializeField]
@@ -58,10 +70,13 @@ namespace FollowingTriangle.Runtime
 
         private IVertexSource vertexSource;
         private IRecorderInput input;
+        private IRecenterMonitor recenterMonitor;
+        private IXrRuntimeInfo xrRuntimeInfo;
         private RecordingSchedule schedule;
         private readonly CalibrationAccumulator calibration = new CalibrationAccumulator();
         private ParticipantProfile profile;
 
+        private int trialIndex = 1;
         private Phase phase = Phase.Idle;
         private double phaseStartTimestamp;
         private double trialStartTimestamp;
@@ -74,6 +89,10 @@ namespace FollowingTriangle.Runtime
         {
             vertexSource = vertexSourceBehaviour as IVertexSource;
             input = inputBehaviour as IRecorderInput;
+            recenterMonitor = recenterMonitorBehaviour as IRecenterMonitor;
+            xrRuntimeInfo = xrRuntimeInfoBehaviour as IXrRuntimeInfo;
+
+            if (recenterMonitor != null) recenterMonitor.Recentered += OnRecentered;
 
             if (settings == null || vertexSource == null || input == null || stimulusPresenter == null)
             {
@@ -281,23 +300,108 @@ namespace FollowingTriangle.Runtime
             }
 
             stimulusPresenter.SetVisible(true);
+            BeginLogging();
             phase = Phase.Playing;
+        }
+
+        /// <summary>
+        /// CSV ログの開始（§6.2）。
+        ///
+        /// 記録は Registration が確定した時点、つまり導入区間の頭から始める。
+        /// 基準姿勢フェーズを記録しないのは、その間はまだ変換が決まっておらず、
+        /// A 側の座標が存在しないため。基準姿勢の質はヘッダの
+        /// registration_residual_rms_m に残る。
+        /// </summary>
+        private void BeginLogging()
+        {
+            if (trialLogger == null) return;
+
+            var recording = stimulusPresenter.Recording;
+            var calibrationA = recording.metadata.calibration;
+
+            var header = new TrialLogHeader
+            {
+                participantId = profile.participantId,
+                conditionId = condition.ToString(),
+                stimulusId = recording.metadata.recordingId,
+                trialIndex = trialIndex,
+                recordedAtIso8601 = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz"),
+
+                neckOffsetD = settings.NeckOffsetD,
+                normalizedNeckOffset = profile.normalizedNeckOffset,
+                handVertexBone = settings.HandVertexBone.ToString(),
+                recomputeNeckVertexOnPlayback = settings.RecomputeNeckVertexOnPlayback,
+
+                characteristicLengthA = calibrationA.characteristicLength,
+                characteristicLengthB = profile.calibration.characteristicLength,
+                bodyScaleFactor = stimulusPresenter.Transform.scale,
+
+                // 正規化分母はキャリブレーション時に確定した固定値（§5.2 の趣旨, §6.1）。
+                // 毎フレームの三角形から取ると、腕を伸ばすだけで誤差が下がる抜け道になる。
+                normalizationLength = profile.calibration.characteristicLength,
+
+                registrationMethod = settings.RegistrationMethod.ToString(),
+                registrationResidualRms = stimulusPresenter.RegistrationResidualRms,
+                transform = stimulusPresenter.Transform,
+
+                sdkVersion = xrRuntimeInfo?.SdkVersion ?? "unknown",
+                unityVersion = Application.unityVersion,
+                requestedDisplayFrequencyHz = xrRuntimeInfo?.RequestedDisplayFrequencyHz ?? 0f,
+                effectiveDisplayFrequencyHz = xrRuntimeInfo?.EffectiveDisplayFrequencyHz ?? 0f,
+                displayFrequencyApplied = xrRuntimeInfo?.DisplayFrequencyApplied ?? false,
+                trackingOriginType = xrRuntimeInfo?.TrackingOriginType ?? "unknown",
+
+                baselineHoldSeconds = settings.BaselineHoldSeconds,
+                leadInSeconds = settings.LeadInSeconds,
+                segmentSeconds = settings.SegmentSeconds,
+                segmentCount = settings.SegmentCount,
+
+                recordingId = recording.metadata.recordingId,
+                performerId = recording.metadata.performerId,
+                recordingFileName = System.IO.Path.GetFileName(ResolveRecordingPath()),
+            };
+
+            recenterMonitor?.ResetPerTrialState();
+            trialLogger.BeginTrial(header, profile.calibration.characteristicLength);
+        }
+
+        private void OnRecentered(double timestamp)
+        {
+            if (trialLogger == null || !trialLogger.IsRecording) return;
+
+            trialLogger.NotifyRecenter();
+            Debug.LogError(
+                $"[{nameof(PlaybackVerificationDriver)}] 試行中に再センタリングが発生しました " +
+                $"(t={timestamp:F3} s)。この試行は無効フラグ付きで保存されます (§1)。");
+        }
+
+        private void OnDestroy()
+        {
+            if (recenterMonitor != null) recenterMonitor.Recentered -= OnRecentered;
         }
 
         private void TickPlayback(in BodyTriangleSample sample)
         {
             double elapsed = sample.timestampSeconds - trialStartTimestamp;
 
-            if (!stimulusPresenter.Tick(elapsed, out _))
+            if (!stimulusPresenter.Tick(elapsed, out var transformedA))
             {
                 ShowMessage("再生できません");
                 return;
             }
 
+            string marker = schedule.TryGetPhaseAt((float)elapsed, out var phaseAtNow)
+                ? phaseAtNow.Id
+                : "";
+
+            // 低信頼のフレームも含めてすべて記録する。除外の判断は後処理（§6.3, §7.1）。
+            trialLogger?.Record(elapsed, marker, transformedA, sample);
+
             if (elapsed >= schedule.TotalSeconds)
             {
                 phase = Phase.Finished;
                 stimulusPresenter.SetVisible(false);
+                FinishLogging();
                 ShowMessage(
                     $"試行終了\n" +
                     $"Registration 残差 RMS {stimulusPresenter.RegistrationResidualRms * 1000f:F1} mm\n" +
@@ -305,11 +409,25 @@ namespace FollowingTriangle.Runtime
                 return;
             }
 
-            string phaseName = schedule.TryGetPhaseAt((float)elapsed, out var current)
-                ? current.Id
-                : "-";
+            ShowMessage(
+                $"{(string.IsNullOrEmpty(marker) ? "-" : marker)}   " +
+                $"{elapsed:F1} / {schedule.TotalSeconds:F1} s");
+        }
 
-            ShowMessage($"{phaseName}   {elapsed:F1} / {schedule.TotalSeconds:F1} s");
+        private void FinishLogging()
+        {
+            if (trialLogger == null || !trialLogger.IsRecording) return;
+
+            if (!trialLogger.EndTrial(out string path, out string error))
+            {
+                Debug.LogError($"[{nameof(PlaybackVerificationDriver)}] {error}");
+                return;
+            }
+
+            trialIndex++;
+            Debug.Log(
+                $"[{nameof(PlaybackVerificationDriver)}] 試行ログを保存しました " +
+                $"({trialLogger.RowCount} 行): {path}");
         }
 
         private void ResetToIdle(string message)

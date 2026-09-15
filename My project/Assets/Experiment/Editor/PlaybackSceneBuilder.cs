@@ -72,9 +72,14 @@ namespace FollowingTriangle.Editor
             var hud = hudObject.AddComponent<RecorderHud>();
             SceneBuildUtility.SetPrivateObjectField(hud, "headTransform", headProxy);
 
+            var loggerObject = new GameObject("Trial Logger");
+            var logger = loggerObject.AddComponent<TrialLogger>();
+            SceneBuildUtility.SetPrivateObjectField(logger, "settings", settings);
+
             var driverObject = new GameObject("Playback Verification Driver");
             var driver = driverObject.AddComponent<PlaybackVerificationDriver>();
             SceneBuildUtility.SetPrivateObjectField(driver, "settings", settings);
+            SceneBuildUtility.SetPrivateObjectField(driver, "trialLogger", logger);
             SceneBuildUtility.SetPrivateObjectField(driver, "vertexSourceBehaviour", mockSource);
             SceneBuildUtility.SetPrivateObjectField(driver, "inputBehaviour", input);
             SceneBuildUtility.SetPrivateObjectField(driver, "selfTriangleView", selfView);

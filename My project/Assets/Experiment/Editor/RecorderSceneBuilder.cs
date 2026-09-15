@@ -102,6 +102,21 @@ namespace FollowingTriangle.Editor
         }
 
         /// <summary>
+        /// 試行 CSV ログの保存先フォルダを開く（仕様書 §6.2）。
+        /// </summary>
+        [MenuItem("Following Triangle/Open Logs Folder")]
+        public static void OpenLogsFolder()
+        {
+            var settings = SceneBuildUtility.ReloadSettings();
+            string directory = TrialLogger.DirectoryFor(settings);
+
+            Directory.CreateDirectory(directory);
+            Debug.Log($"[{nameof(RecorderSceneBuilder)}] 試行ログフォルダ: {directory}");
+
+            if (!Application.isBatchMode) EditorUtility.RevealInFinder(directory);
+        }
+
+        /// <summary>
         /// 保存済み録画の要約をコンソールに出す。
         /// JSON を直接開かずに、フレーム数・区間マーカー・キャリブレーション値・
         /// 有効フラグを確認するため。

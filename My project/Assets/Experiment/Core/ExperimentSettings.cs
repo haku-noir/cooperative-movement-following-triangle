@@ -115,6 +115,10 @@ namespace FollowingTriangle.Core
         [Tooltip("録画の保存先ディレクトリ名。Application.persistentDataPath 直下 (§3.1)。")]
         private string recordingsDirectoryName = "recordings";
 
+        [SerializeField]
+        [Tooltip("試行 CSV ログの保存先ディレクトリ名。Application.persistentDataPath 直下 (§6.2)。")]
+        private string logsDirectoryName = "logs";
+
         // ------------------------------------------------------------------
         // §5.2 / §5.3 / §7.3 再生・位置合わせ
         // ------------------------------------------------------------------
@@ -159,6 +163,7 @@ namespace FollowingTriangle.Core
         public bool ShowPerformerTrackingWarning => showPerformerTrackingWarning;
         public bool PrettyPrintRecordingJson => prettyPrintRecordingJson;
         public string RecordingsDirectoryName => recordingsDirectoryName;
+        public string LogsDirectoryName => logsDirectoryName;
         public RegistrationMethod RegistrationMethod => registrationMethod;
         public bool RecomputeNeckVertexOnPlayback => recomputeNeckVertexOnPlayback;
         public bool ShowOtherTriangleDuringBaseline => showOtherTriangleDuringBaseline;
@@ -183,6 +188,11 @@ namespace FollowingTriangle.Core
             if (string.IsNullOrWhiteSpace(recordingsDirectoryName))
             {
                 recordingsDirectoryName = "recordings";
+            }
+
+            if (string.IsNullOrWhiteSpace(logsDirectoryName))
+            {
+                logsDirectoryName = "logs";
             }
 
             experiment2.WarnIfEnabled(name);

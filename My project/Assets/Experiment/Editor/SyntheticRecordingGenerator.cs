@@ -30,11 +30,24 @@ namespace FollowingTriangle.Editor
                 return;
             }
 
+            GenerateThreeStimuli(settings, "take");
+        }
+
+        /// <summary>
+        /// 指定した設定とスケジュールに合わせて刺激 3 本を生成する。
+        ///
+        /// 刺激は設定のスケジュールに一致していなければならない。区間長を変えたのに
+        /// 刺激を作り直さないと、区間2（並進のみ）のつもりの時間帯に
+        /// 別の運動が再生されることになる。
+        /// </summary>
+        /// <param name="idPrefix">刺激 ID の接頭辞。"take" なら take1/take2/take3。</param>
+        public static bool GenerateThreeStimuli(ExperimentSettings settings, string idPrefix)
+        {
             var schedule = RecordingSchedule.FromSettings(settings);
             if (!schedule.Validate(out string scheduleError))
             {
                 Debug.LogError($"[SyntheticRecordingGenerator] スケジュールが不正です: {scheduleError}");
-                return;
+                return false;
             }
 
             var report = new StringBuilder("[SyntheticRecordingGenerator] 合成刺激を生成しました\n");
@@ -52,7 +65,7 @@ namespace FollowingTriangle.Editor
                 parameters.handFrequencyHz = 0.35f - 0.04f * i;
 
                 var motion = new SyntheticMotion(parameters, schedule);
-                string recordingId = $"take{i + 1}";
+                string recordingId = $"{idPrefix}{i + 1}";
 
                 var file = SyntheticRecordingBuilder.Build(
                     motion, SampleRateHz, recordingId,
@@ -72,10 +85,14 @@ namespace FollowingTriangle.Editor
             }
 
             report.AppendLine(
-                "\n刺激 ID は take1 / take2 / take3。Stimulus Catalog の既定と一致します。");
+                $"  刺激 ID: {idPrefix}1 / {idPrefix}2 / {idPrefix}3" +
+                $"  総時間 {schedule.TotalSeconds:F0} s" +
+                $"  保存先 {RecordingStorage.DirectoryFor(settings)}");
 
             if (allSucceeded) Debug.Log(report.ToString());
             else Debug.LogError(report.ToString());
+
+            return allSucceeded;
         }
 
         /// <summary>

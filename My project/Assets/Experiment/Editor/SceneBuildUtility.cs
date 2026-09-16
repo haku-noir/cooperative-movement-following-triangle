@@ -146,6 +146,26 @@ namespace FollowingTriangle.Editor
             EditorSceneManager.SaveScene(scene, scenePath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+
+            VerifySavedScene(scenePath);
+            wiredFields.Clear();
+        }
+
+        private static void VerifySavedScene(string scenePath)
+        {
+            if (wiredFields.Count == 0 || !File.Exists(scenePath)) return;
+
+            var offenders = FindUnassignedReferences(
+                File.ReadAllText(scenePath, System.Text.Encoding.UTF8), wiredFields);
+
+            if (offenders.Count == 0) return;
+
+            Debug.LogError(
+                $"[SceneBuildUtility] {scenePath} に値の入っていない参照があります: " +
+                string.Join(", ", offenders) + "\n" +
+                "EditorSceneManager.NewScene をまたいで持ち越したアセットを配線すると、" +
+                "代入は成功するのに保存時だけ {fileID: 0} になります。" +
+                "NewScene の後に AssetDatabase から読み直してください。");
         }
 
         /// <summary>
@@ -175,20 +195,89 @@ namespace FollowingTriangle.Editor
                 Debug.LogError(
                     $"[SceneBuildUtility] {target.GetType().Name}.{fieldName} への参照設定に失敗しました " +
                     $"(設定しようとした値: {value})。生成されたシーンは不完全です。");
+                return;
             }
+
+            // 保存後に検査するため、配線したフィールド名を覚えておく。
+            wiredFields.Add(fieldName);
+        }
+
+        /// <summary>
+        /// この生成で配線したフィールド名。<see cref="SaveScene"/> の検査に使う。
+        /// </summary>
+        private static readonly System.Collections.Generic.HashSet<string> wiredFields =
+            new System.Collections.Generic.HashSet<string>();
+
+        /// <summary>
+        /// 保存されたシーンに、値が入らなかった参照が無いかを調べる。
+        ///
+        /// なぜ保存後に調べるのか：
+        /// EditorSceneManager.NewScene をまたいで持ち越したアセットのインスタンスを
+        /// 配線に使うと、**代入は成功し、読み戻しても一致するのに、保存時だけ
+        /// {fileID: 0} になる**。代入直後の検査では原理的に捕まえられない。
+        /// 「生成は成功したのに Play すると参照が null」という形でしか表に出ないので、
+        /// 書き出された YAML を直接見る。
+        /// </summary>
+        /// <returns>値が入らなかったフィールド名。</returns>
+        public static System.Collections.Generic.List<string> FindUnassignedReferences(
+            string sceneYaml, System.Collections.Generic.IEnumerable<string> fieldNames)
+        {
+            var offenders = new System.Collections.Generic.List<string>();
+            if (string.IsNullOrEmpty(sceneYaml)) return offenders;
+
+            foreach (string field in fieldNames)
+            {
+                // Unity は未設定の参照を "  <field>: {fileID: 0}" として書く。
+                if (sceneYaml.Contains($"  {field}: {{fileID: 0}}")) offenders.Add(field);
+            }
+
+            return offenders;
         }
 
         public static void SetPrivateString(Object target, string fieldName, string value)
         {
+            Apply(target, fieldName, property => property.stringValue = value);
+        }
+
+        public static void SetPrivateFloat(Object target, string fieldName, float value)
+        {
+            Apply(target, fieldName, property => property.floatValue = value);
+        }
+
+        public static void SetPrivateInt(Object target, string fieldName, int value)
+        {
+            Apply(target, fieldName, property => property.intValue = value);
+        }
+
+        public static void SetPrivateBool(Object target, string fieldName, bool value)
+        {
+            Apply(target, fieldName, property => property.boolValue = value);
+        }
+
+        public static void SetPrivateStringArray(Object target, string fieldName, string[] values)
+        {
+            Apply(target, fieldName, property =>
+            {
+                property.arraySize = values.Length;
+                for (int i = 0; i < values.Length; i++)
+                {
+                    property.GetArrayElementAtIndex(i).stringValue = values[i];
+                }
+            });
+        }
+
+        private static void Apply(Object target, string fieldName, System.Action<SerializedProperty> set)
+        {
             var serialized = new SerializedObject(target);
             var property = serialized.FindProperty(fieldName);
+
             if (property == null)
             {
                 Debug.LogError($"[SceneBuildUtility] {target.GetType().Name}.{fieldName} が見つかりません。");
                 return;
             }
 
-            property.stringValue = value;
+            set(property);
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
     }

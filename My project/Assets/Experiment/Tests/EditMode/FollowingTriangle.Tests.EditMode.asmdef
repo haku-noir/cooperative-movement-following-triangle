@@ -3,6 +3,7 @@
   "rootNamespace": "FollowingTriangle.Tests",
   "references": [
     "FollowingTriangle.Core",
+    "FollowingTriangle.Editor",
     "UnityEngine.TestRunner",
     "UnityEditor.TestRunner"
   ],

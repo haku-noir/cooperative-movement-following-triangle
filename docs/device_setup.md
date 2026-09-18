@@ -2,7 +2,71 @@
 
 エディタでの動作確認（`docs/quick_test.md`）が済んでいることを前提とします。
 
+実機で動かす方法は 2 通りあります。
+
+| | Quest Link（§A） | APK ビルド（§B） |
+|---|---|---|
+| 起動 | **Unity の Play ボタン** | ビルド → 転送 |
+| 1 回あたり | 数秒 | 数分 |
+| 用途 | 開発・確認・パイロット | 本番の実験 |
+| PC 接続 | 必要（有線推奨） | 不要 |
+
+**確認作業は Quest Link が圧倒的に速い**ので、まずそちらを設定することを勧めます。
+本番の実験では PC に繋がれていない APK 版を使ってください。
+
 ---
+
+# A. Quest Link（Play ボタンで実機実行）
+
+## A-1. Unity 側（メニュー 1 つ）
+
+**`Following Triangle > Device (Quest) > Enable Play Mode Over Quest Link`**
+
+Standalone 用の OpenXR ローダーを有効にします。
+**`Verify Quest Link Setup`** でいつでも状態を確認できます。
+
+> ### なぜ Standalone なのか
+>
+> Unity のエディタ Play モードは、**アクティブなビルドターゲットに関係なく
+> 必ず Standalone の XR 設定を使います。**
+> （`XRGeneralSettingsPerBuildTarget.PlayModeStateChanged` が
+> `SettingsForBuildTarget(BuildTargetGroup.Standalone)` を読んでいる）
+>
+> したがって **ビルドターゲットは Android のままで構いません。**
+> 逆に、実機ビルド用に Android だけ設定していると Standalone 側が空のままになり、
+> Play を押しても何も起きません。
+
+## A-2. PC 側（手動）
+
+1. **Meta Quest Link**（PC アプリ）をインストールして起動
+2. `設定 > 一般 > OpenXR ランタイム` を **「Meta Quest Link」** に設定
+3. `設定 > ベータ > 開発者ランタイム機能` を有効化
+   さらに **「Link 経由のハンドトラッキング」** を有効化
+4. Quest を Link ケーブルで接続し、ヘッドセット内で **Link を開始**
+
+> **手順 3 を忘れると手の骨格が取れず V1/V2 が欠落します（§2.3）。**
+> 頭は動くのに三角形の手の頂点が出ない、という症状になります。
+>
+> Air Link でも動きますが遅延が増えるため、計測には有線を推奨します。
+
+## A-3. 実行
+
+`Assets/Experiment/Scenes/ExperimentDevice.unity` を開いて **Play**。
+
+記録モードを試す場合は `RecorderDevice.unity`、
+モード選択から入る場合は `Boot.unity` を開いてください。
+
+## A-4. Link 実行時の注意
+
+- **リフレッシュレートは Link 経由だと PC 側の設定に従います。**
+  90 Hz が適用されない場合があり、`XrRuntimeConfig` がエラーを出します。
+  §1 の要求を満たすかは APK 版で確認してください。
+- 遅延が APK 版より大きいため、**追従精度の値そのものは本番と比較できません。**
+  Link は「動くこと・見え方・トラッキング範囲」の確認に使ってください。
+
+---
+
+# B. APK ビルド（本番用）
 
 ## 0. 全体の流れ
 

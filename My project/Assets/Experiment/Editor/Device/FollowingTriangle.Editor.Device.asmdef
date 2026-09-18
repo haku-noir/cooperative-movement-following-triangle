@@ -7,7 +7,9 @@
     "FollowingTriangle.Xr",
     "FollowingTriangle.Editor",
     "Oculus.VR",
-    "Oculus.VR.Editor"
+    "Oculus.VR.Editor",
+    "Unity.XR.Management",
+    "Unity.XR.Management.Editor"
   ],
   "includePlatforms": [
     "Editor"

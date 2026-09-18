@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8560f94677ae194a8850839a9411393, type: 3}
+  m_Name: ExperimentSettings.QuickTest
+  m_EditorClassIdentifier: FollowingTriangle.Core::FollowingTriangle.Core.ExperimentSettings
+  neckOffsetD: 0.15
+  handVertexBone: 1
+  vertexSphereDiameter: 0.03
+  edgeLineWidth: 0.01
+  vertexColor: {r: 0.95, g: 0.95, b: 0.95, a: 1}
+  edgeColor: {r: 0.95, g: 0.95, b: 0.95, a: 1}
+  targetDisplayFrequencyHz: 90
+  baselineHoldSeconds: 2
+  leadInSeconds: 2
+  segmentSeconds: 3
+  segmentCount: 4
+  calibrationHoldSeconds: 2
+  segmentMarkerMode: 0
+  showPerformerTriangle: 1
+  showPerformerTrackingWarning: 1
+  prettyPrintRecordingJson: 0
+  recordingsDirectoryName: recordings-quicktest
+  logsDirectoryName: logs-quicktest
+  registrationMethod: 0
+  recomputeNeckVertexOnPlayback: 1
+  showOtherTriangleDuringBaseline: 0
+  showProgressToParticipant: 0
+  experiment2:
+    varyNeckOffset: 0
+    fillTriangle: 0
+    distinguishSelfAndOtherByColor: 0
+    bidirectionalRealtime: 0
+    usePassthrough: 0

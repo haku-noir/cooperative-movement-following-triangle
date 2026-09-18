@@ -1,0 +1,31 @@
+{
+  "name": "FollowingTriangle.Editor.Device",
+  "rootNamespace": "FollowingTriangle.Editor",
+  "references": [
+    "FollowingTriangle.Core",
+    "FollowingTriangle.Runtime",
+    "FollowingTriangle.Xr",
+    "FollowingTriangle.Editor",
+    "Oculus.VR",
+    "Oculus.VR.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "META_XR_CORE_SDK"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.meta.xr.sdk.core",
+      "expression": "",
+      "define": "META_XR_CORE_SDK"
+    }
+  ],
+  "noEngineReferences": false
+}
